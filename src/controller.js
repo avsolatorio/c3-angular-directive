@@ -8,9 +8,12 @@ angular.module('gridshore.c3js.chart')
      */
     .controller('ChartController', ChartController);
 
-ChartController.$inject = ['$scope', '$timeout'];
-function ChartController($scope, $timeout) {
+ChartController.$inject = ['$scope', '$timeout', '$parse'];
+function ChartController($scope, $timeout, $parse) {
     this.showGraph = showGraph;
+
+    this.addSubchart = addSubchart;
+    this.addExtent = addExtent;
 
     this.addColumn = addColumn;
     this.addAxisProperties = addAxisProperties;
@@ -324,6 +327,19 @@ function ChartController($scope, $timeout) {
             };
         }
 
+        if ($scope.subchart != null) {
+            config.subchart = $scope.subchart;
+        }
+        if ($scope.extent != null) {
+            if (config.axis === undefined) {
+                config.axis = {};
+            }
+            if (config.axis.x === undefined) {
+                config.axis.x = {};
+            }
+            config.axis.x.extent = $scope.extent;
+        }
+
         $scope.config = config;
 
         if ($scope.chartData && $scope.chartColumns) {
@@ -608,6 +624,14 @@ function ChartController($scope, $timeout) {
         $scope.initialConfig = initialConfig;
     }
 
+    function addSubchart(subchart) {
+        $scope.subchart = subchart;
+    };
+
+    function addExtent(extent) {
+        $scope.extent = extent;
+    };
+
     function addColumnProperties(id, columnType, columnName, columnColor) {
         if (columnType !== undefined) {
             $scope.types[id] = columnType;
@@ -648,6 +672,7 @@ function ChartController($scope, $timeout) {
 
         $scope.config.data.keys = $scope.jsonKeys;
         $scope.config.data.json = $scope.chartData;
+        $scope.config.axis.x.extent = $parse($scope.extent);
 
         if (!$scope.chartIsGenerated) {
             $scope.chart = c3.generate($scope.config);
