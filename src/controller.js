@@ -353,6 +353,16 @@ function ChartController($scope, $timeout, $parse) {
             }
         }
 
+        if ($scope.extent) {
+            $scope.$watch('extent', function() {
+                $scope.config.axis.x.extent = $parse($scope.extent);
+                $scope.chart = c3.generate($scope.config);
+                if ($scope.chartCallbackFunction) {
+                    $scope.chartCallbackFunction($scope.chart);
+                }
+            }, true);
+        }
+
         $scope.$on('$destroy', function () {
             $timeout(function () {
                 if (angular.isDefined($scope.chart)) {
